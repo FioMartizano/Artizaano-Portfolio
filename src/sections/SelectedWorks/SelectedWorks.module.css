@@ -1,0 +1,443 @@
+
+/* =====================================
+   SELECTED WORKS — HORIZONTAL SHOWCASE
+===================================== */
+
+.works {
+  position: relative;
+  width: 100%;
+  background: var(--color-void);
+  color: var(--color-paper);
+}
+
+.horizontalStage {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 620px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* =====================================
+   SECTION LABEL + ANIMATED TITLE
+===================================== */
+
+.sectionLabel {
+  position: absolute;
+  top: 28px;
+  left: 4.2vw;
+  z-index: 5;
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 0.85vw, 0.9rem);
+  letter-spacing: 0.08em;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+}
+
+.openingTitle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 6;
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11vw, 10rem);
+  font-weight: 400;
+  line-height: 0.85;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  transform-origin: left top;
+  will-change: left, top, transform;
+  pointer-events: none;
+}
+
+/* =====================================
+   HORIZONTAL TRACK
+===================================== */
+
+.horizontalViewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.projectTrack {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  will-change: transform;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.projectPanel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(280px, 1fr);
+  align-items: center;
+  gap: 5vw;
+
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100%;
+  padding: 20vh 8vw 10vh 4.2vw;
+  border-right: 1px solid rgba(241, 238, 231, 0.08);
+}
+
+.projectInfo {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  padding-top: 5vh;
+}
+
+/* =====================================
+   PROJECT INFORMATION
+===================================== */
+
+.projectNumber {
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--color-muted);
+  font-size: clamp(0.8rem, 0.9vw, 0.95rem);
+  letter-spacing: 0.08em;
+}
+
+.projectInfo h3 {
+  margin: 0;
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  font-size: clamp(1.2rem, 1.5vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+}
+
+.projectDescription {
+  max-width: 460px;
+  margin: 1.4rem 0 2rem;
+  color: var(--color-paper);
+  font-size: clamp(0.95rem, 1.05vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.metaGroup {
+  margin-top: 1.25rem;
+}
+
+.metaGroup span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-muted);
+  font-size: clamp(0.75rem, 0.8vw, 0.85rem);
+  letter-spacing: 0.08em;
+}
+
+.metaGroup p {
+  margin: 0;
+  color: var(--color-paper);
+  font-size: clamp(0.9rem, 0.95vw, 1rem);
+  line-height: 1.6;
+}
+
+/* =====================================
+   PROJECT LINK
+===================================== */
+
+.projectLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(241, 238, 231, 0.45);
+  color: var(--color-paper);
+  font-size: clamp(0.9rem, 0.95vw, 1rem);
+  text-decoration: none;
+  transition:
+    color 220ms ease,
+    border-color 220ms ease,
+    gap 220ms ease;
+}
+
+.projectLink:hover {
+  gap: 15px;
+  border-color: var(--color-acid);
+  color: var(--color-acid);
+}
+
+.projectLink span {
+  font-size: 1.1rem;
+}
+
+/* =====================================
+   ORBITAL PLACEHOLDER ARTWORK
+===================================== */
+
+.orbitVisual {
+  --orbit-glow: rgba(109, 53, 242, 0.8);
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+
+  width: min(100%, 440px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  isolation: isolate;
+}
+
+.orbitVisual::before {
+  content: "";
+  position: absolute;
+  inset: 20%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--orbit-glow),
+    transparent 70%
+  );
+  filter: blur(24px);
+  opacity: 0.85;
+}
+
+.orbitRing {
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(241, 238, 231, 0.2);
+  border-radius: 50%;
+}
+
+.orbitRing:nth-child(2) {
+  inset: 16%;
+}
+
+.orbitRing:nth-child(3) {
+  inset: 24%;
+}
+
+.orbitCore {
+  display: grid;
+  place-items: center;
+  width: 37%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(241, 238, 231, 0.65);
+  border-radius: 24%;
+  color: var(--color-paper);
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  box-shadow:
+    0 0 35px var(--orbit-glow),
+    inset 0 0 24px rgba(255, 255, 255, 0.08);
+  text-shadow: 0 0 18px var(--orbit-glow);
+  transform: rotate(-8deg);
+}
+
+.orbitDot {
+  position: absolute;
+  top: 7%;
+  left: 49%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-acid);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.subdiverse {
+  --orbit-glow: rgba(232, 93, 36, 0.9);
+}
+
+.subdiverse .orbitDot {
+  background: var(--color-ember);
+}
+
+.computerAid {
+  --orbit-glow: rgba(220, 55, 210, 0.85);
+}
+
+.computerAid .orbitDot {
+  background: #F52ABF;
+}
+
+.gearedUp {
+  --orbit-glow: rgba(80, 255, 100, 0.8);
+}
+
+.gearedUp .orbitDot {
+  background: var(--color-acid);
+}
+
+.placeholderNote {
+  position: absolute;
+  bottom: 5%;
+  color: var(--color-muted);
+  font-size: clamp(0.6rem, 0.65vw, 0.7rem);
+  letter-spacing: 0.12em;
+}
+
+.panelIndex {
+  position: absolute;
+  right: 4.2vw;
+  bottom: 38px;
+  color: var(--color-muted);
+  font-size: clamp(0.75rem, 0.8vw, 0.85rem);
+  letter-spacing: 0.08em;
+}
+
+/* =====================================
+   SCROLL INDICATOR
+===================================== */
+
+.scrollHint {
+  position: absolute;
+  left: 4.2vw;
+  bottom: 38px;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--color-muted);
+  font-size: clamp(0.7rem, 0.75vw, 0.8rem);
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+
+.progressTrack {
+  display: block;
+  width: 76px;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(241, 238, 231, 0.2);
+}
+
+.progressLine {
+  display: block;
+  width: 33.333%;
+  height: 100%;
+  background: var(--color-acid);
+}
+
+/* =====================================
+   TABLET
+===================================== */
+
+@media (max-width: 900px) {
+  .projectPanel {
+    grid-template-columns: minmax(240px, 0.9fr) minmax(220px, 1fr);
+    gap: 3vw;
+    padding-right: 5vw;
+  }
+
+  .projectInfo {
+    max-width: 440px;
+  }
+
+  .orbitVisual {
+    width: min(100%, 350px);
+  }
+
+  .projectDescription {
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
+  }
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width: 650px) {
+  .horizontalStage {
+    min-height: 600px;
+  }
+
+  .sectionLabel {
+    left: 6vw;
+  }
+
+  .projectPanel {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    align-content: center;
+    gap: 1rem;
+    padding: 22vh 7vw 12vh;
+  }
+
+  .projectInfo {
+    grid-row: 1;
+    padding-top: 0;
+  }
+
+  .projectNumber {
+    font-size: 0.8rem;
+  }
+
+  .projectInfo h3 {
+    font-size: 1.2rem;
+  }
+
+  .projectDescription {
+    max-width: 100%;
+    margin: 0.8rem 0 1rem;
+    font-size: 0.95rem;
+  }
+
+  .metaGroup {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.7rem 1rem 0 0;
+  }
+
+  .metaGroup span {
+    font-size: 0.72rem;
+  }
+
+  .metaGroup p {
+    font-size: 0.82rem;
+  }
+
+  .projectLink {
+    font-size: 0.85rem;
+  }
+
+  .orbitVisual {
+    grid-row: 2;
+    width: min(70vw, 290px);
+    margin: 0 auto;
+  }
+
+  .scrollHint {
+    left: 7vw;
+    bottom: 25px;
+    font-size: 0.68rem;
+  }
+
+  .panelIndex {
+    right: 7vw;
+    bottom: 25px;
+    font-size: 0.7rem;
+  }
+
+  .openingTitle {
+    font-size: clamp(3.4rem, 15vw, 6rem);
+  }
+}
+
+/* =====================================
+   REDUCED MOTION
+===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .projectLink {
+    transition: none;
+  }
+}
