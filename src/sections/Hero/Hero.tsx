@@ -67,7 +67,7 @@ function Hero() {
     });
   };
 
-  // Typography animation
+  // Intro: reveal the wordmark on load
   useGSAP(
     () => {
       const timeline = gsap.timeline();
@@ -114,6 +114,122 @@ function Hero() {
     { scope: heroRef }
   );
 
+  // Scroll: ARTIZAANO exits from the center outward,
+  // then the sticker slaps on in its place.
+  useGSAP(
+    () => {
+      const hero = heroRef.current;
+      if (!hero) return;
+
+      const q = gsap.utils.selector(hero);
+      const mm = gsap.matchMedia();
+
+      // Reduced motion skips all of this; the CSS shows a static layout instead.
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const wordmark = q(`.${styles.wordmark}`);
+        const letterEls = q(`.${styles.letter}`);
+        const description = q(`.${styles.description}`);
+        const sticker = q(`.${styles.sticker}`);
+        const peelEl = q(`.${styles.peel}`);
+        const cue = q(`.${styles.cue}`);
+        const hint = q(`.${styles.hint}`);
+
+        // Start state: sticker hidden and not clickable until it lands.
+        gsap.set(sticker, { autoAlpha: 0, scale: 0.5, rotate: -16, y: 60 });
+        gsap.set(peelEl, { pointerEvents: "none" });
+        gsap.set(hint, { autoAlpha: 0, y: 10 });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "+=170%",
+            scrub: 0.8,
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        tl
+          // 1. "SCROLL" cue fades out
+          .to(cue, { autoAlpha: 0, duration: 0.15, ease: "none" }, 0)
+
+          // 2. Letters lift off, starting from the middle letter
+          .fromTo(
+            letterEls,
+            { y: 0, opacity: 1, rotateX: 0, filter: "blur(0px)" },
+            {
+              y: -140,
+              opacity: 0,
+              rotateX: 70,
+              filter: "blur(10px)",
+              duration: 0.45,
+              ease: "power2.in",
+              stagger: { each: 0.04, from: "center" },
+              immediateRender: false,
+            },
+            0.1
+          )
+
+          // 3. Description drifts up and fades
+          .fromTo(
+            description,
+            { autoAlpha: 1, y: 0 },
+            {
+              autoAlpha: 0,
+              y: -30,
+              duration: 0.35,
+              ease: "none",
+              immediateRender: false,
+            },
+            0.1
+          )
+
+          // 4. Glitch beat as the wordmark breaks apart
+          .to(
+            wordmark,
+            {
+              x: -4,
+              skewX: -10,
+              textShadow: "4px 0 #6D35F2, -4px 0 #C8FF32",
+              duration: 0.05,
+              repeat: 3,
+              yoyo: true,
+              ease: "none",
+            },
+            0.35
+          )
+
+          // 5. Sticker slaps on at the center
+          .fromTo(
+            sticker,
+            { autoAlpha: 0, scale: 0.5, rotate: -16, y: 60 },
+            {
+              autoAlpha: 1,
+              scale: 1,
+              rotate: 0,
+              y: 0,
+              duration: 0.6,
+              ease: "back.out(1.7)",
+              immediateRender: false,
+            },
+            0.45
+          )
+
+          // 6. Once it has landed, it can be hovered and peeled
+          .set(peelEl, { pointerEvents: "auto" }, 1)
+          .to(hint, { autoAlpha: 1, y: 0, duration: 0.2, ease: "none" }, 1.05)
+
+          // 7. Hold, so there is time to play with the sticker before unpinning
+          .to({}, { duration: 0.75 });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: heroRef }
+  );
+
   return (
     <section
       className={styles.hero}
@@ -129,80 +245,90 @@ function Hero() {
         <span>WEB DEVELOPMENT / UI-UX / VISUAL DESIGN</span>
       </div>
 
-      {/* MAIN HERO CONTENT */}
+      {/* CENTERED WORDMARK + DESCRIPTION */}
       <div className={styles.heroContent}>
-        <div className={styles.heroText}>
-          <h1 className={styles.wordmark} aria-label="ARTIZAANO">
-            {letters.map((letter, index) => (
-              <span
-                className={styles.letter}
-                key={`${letter}-${index}`}
-                aria-hidden="true"
-              >
-                {letter}
-              </span>
-            ))}
-          </h1>
+        <h1 className={styles.wordmark} aria-label="ARTIZAANO">
+          {letters.map((letter, index) => (
+            <span
+              className={styles.letter}
+              key={`${letter}-${index}`}
+              aria-hidden="true"
+            >
+              {letter}
+            </span>
+          ))}
+        </h1>
 
-          <p className={styles.description}>
-            I design and build digital experiences shaped by
-            interaction, identity, visual experimentation,
-            and storytelling.
-          </p>
-        </div>
+        <p className={styles.description}>
+          I design and build digital experiences shaped by
+          interaction, identity, visual experimentation,
+          and storytelling.
+        </p>
+      </div>
 
-        {/* HOLOGRAPHIC PEELING STICKER */}
-        <div className={styles.sticker}>
+      {/* HOLOGRAPHIC PEELING STICKER (revealed on scroll) */}
+      <div className={styles.sticker}>
+        <div
+          className={styles.peel}
+          {...peel.handlers}
+          {...holo.handlers}
+        >
           <div
-            className={styles.peel}
-            {...peel.handlers}
-            {...holo.handlers}
+            className={styles.tilt}
+            ref={holo.tiltRef}
           >
             <div
-              className={styles.tilt}
-              ref={holo.tiltRef}
+              className={styles.face}
+              ref={peel.baseRef}
             >
-              <div
-                className={styles.face}
-                ref={peel.baseRef}
-              >
-                <img
-                  className={styles.stickerBase}
-                  src={stickerLogo}
-                  alt="Artizaano smiley sticker"
-                  onLoad={peel.render}
-                  draggable={false}
-                />
-
-                <div
-                  className={styles.foil}
-                  style={maskStyle}
-                  aria-hidden="true"
-                />
-
-                <div
-                  className={styles.glare}
-                  style={maskStyle}
-                  aria-hidden="true"
-                />
-              </div>
+              <img
+                className={styles.stickerBase}
+                src={stickerLogo}
+                alt="Artizaano smiley sticker"
+                onLoad={peel.render}
+                draggable={false}
+              />
 
               <div
-                className={styles.flap}
-                ref={peel.flapRef}
+                className={styles.foil}
+                style={maskStyle}
                 aria-hidden="true"
-              >
-                <img
-                  ref={peel.flapImgRef}
-                  src={stickerLogo}
-                  alt=""
-                  draggable={false}
-                />
-              </div>
+              />
+
+              <div
+                className={styles.pearl}
+                style={maskStyle}
+                aria-hidden="true"
+              />
+
+              <div
+                className={styles.glare}
+                style={maskStyle}
+                aria-hidden="true"
+              />
+            </div>
+
+            <div
+              className={styles.flap}
+              ref={peel.flapRef}
+              aria-hidden="true"
+            >
+              <img
+                ref={peel.flapImgRef}
+                src={stickerLogo}
+                alt=""
+                draggable={false}
+              />
             </div>
           </div>
         </div>
       </div>
+
+      {/* SCROLL CUE, THEN PEEL HINT */}
+      <div className={styles.cue}>
+        SCROLL <span className={styles.cueArrow} aria-hidden="true">↓</span>
+      </div>
+      <div className={styles.hint}>HOVER OR TAP TO PEEL</div>
 
       {/* FOOTER */}
       <div className={styles.footer}>

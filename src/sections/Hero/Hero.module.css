@@ -101,7 +101,10 @@
 ================================ */
 
 .intro {
-    margin-top: 65px;
+    position: relative;
+    z-index: 2;
+    margin-top: 35px; 
+    text-align: center;
 }
 
 .intro p {
@@ -118,7 +121,7 @@
 
 
 /* ================================
-   MAIN CONTENT
+   MAIN CONTENT (CENTERED)
 ================================ */
 
 .heroContent {
@@ -128,24 +131,21 @@
     right: 4.2vw;
     transform: translateY(-50%);
 
-    display: grid;
-    grid-template-columns: 1.6fr 0.9fr;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 3rem;
-}
-
-.heroText {
-    min-width: 0;
+    text-align: center;
 }
 
 .wordmark {
     display: flex;
+    justify-content: center;
     flex-wrap: nowrap;
     white-space: nowrap;
     perspective: 800px;
 
     font-family: var(--font-display);
-    font-size: clamp(4rem, 10vw, 11rem);
+    font-size: clamp(2.6rem, 14vw, 20rem);
     line-height: 0.9;
     letter-spacing: -0.055em;
     font-weight: 400;
@@ -162,8 +162,8 @@
 ================================ */
 
 .description {
-    max-width: 390px;
-    margin-top: 24px;
+    max-width: 420px;
+    margin-top: 28px;
 
     font-size: 0.85rem;
     line-height: 1.6;
@@ -174,19 +174,27 @@
    STICKER
 ================================ */
 
+/* Fills the hero and centers the sticker. GSAP scales and fades this
+   wrapper on scroll, so it must not use a CSS transform to center. */
 .sticker {
+    position: absolute;
+    inset: -35px 0 0; /* shifts the centered sticker upward */
+    z-index: 1;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+
+    pointer-events: none;
 }
 
 /* Outer box: catches the pointer and never moves,
    so tilting the sticker can't make the hover flicker. */
 .peel {
     position: relative;
-    width: clamp(350px, 35vw, 550px);
+    width: clamp(300px, 34vw, 540px);
     cursor: pointer;
+    pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     touch-action: manipulation;
@@ -196,6 +204,9 @@
 .tilt {
     position: relative;
     will-change: transform;
+
+    /* soft iridescent glow that grows with the shine */
+    filter: drop-shadow(0 10px calc(16px + 26px * var(--shine, 0.45)) rgba(150, 120, 255, calc(0.16 + 0.3 * var(--shine, 0.45))));
 }
 
 /* Sticker face: image plus foil layers, clipped as one piece by the peel. */
@@ -212,9 +223,10 @@
 }
 
 /* ---- Holo foil ----
-   Both layers are masked to the logo's shape (the mask image is set
+   All three layers are masked to the logo's shape (the mask image is set
    inline from Hero.tsx) and blend into the sticker underneath. */
 .foil,
+.pearl,
 .glare {
     position: absolute;
     top: 0;
@@ -231,35 +243,58 @@
     mask-position: center;
 }
 
-/* Rainbow foil*/
-.foil {
-    background: repeating-linear-gradient(115deg,
-            #ff4fd8 0%,
-            #7a5cff 10%,
-            #2fd4ff 20%,
-            #3dffb5 30%,
-            #c8ff32 40%,
-            #ffe45c 50%,
-            #ff4fd8 60%);
-    background-size: 220% 220%;
-    background-position: var(--hx, 50%) var(--hy, 50%);
-    mix-blend-mode: hard-light;
-    opacity: calc(var(--shine, 0.45) * 0.6);
+/* Pearl film: a soft pastel mesh laid over the sticker like holographic
+   laminate. Normal blending is what tints the white die-cut border. */
+.pearl {
+    background:
+        radial-gradient(ellipse 65% 55% at calc(var(--hx, 50%) * 0.9 + 5%) calc(var(--hy, 50%) * 0.7 + 10%),
+            rgba(255, 110, 215, 0.95), transparent 70%),
+        radial-gradient(ellipse 60% 60% at calc(105% - var(--hx, 50%) * 0.9) calc(var(--hy, 50%) * 0.6 + 25%),
+            rgba(60, 225, 255, 0.95), transparent 70%),
+        radial-gradient(ellipse 55% 50% at calc(var(--hy, 50%) * 0.8 + 10%) calc(100% - var(--hx, 50%) * 0.7),
+            rgba(140, 120, 255, 0.95), transparent 70%),
+        radial-gradient(ellipse 50% 45% at calc(100% - var(--hy, 50%) * 0.7) calc(100% - var(--hy, 50%) * 0.5),
+            rgba(120, 255, 205, 0.9), transparent 70%),
+        radial-gradient(ellipse 40% 40% at calc(var(--hx, 50%) * 0.4 + 30%) calc(var(--hx, 50%) * 0.3 + 25%),
+            rgba(255, 238, 160, 0.8), transparent 70%);
+    opacity: calc(var(--shine, 0.45) * 0.55);
 }
 
-/* Glare effect for foil*/
+/* Prism foil: saturated colour shift that moves with the pointer */
+.foil {
+    background: linear-gradient(115deg,
+            #ff4fd8 0%,
+            #7a5cff 18%,
+            #2fd4ff 36%,
+            #3dffb5 54%,
+            #c8ff32 70%,
+            #ffe45c 84%,
+            #ff4fd8 100%);
+    background-size: 300% 300%;
+    background-position: var(--hx, 50%) var(--hy, 50%);
+    mix-blend-mode: hard-light;
+    opacity: calc(var(--shine, 0.45) * 0.5);
+}
+
+/* Glare: a spotlight under the pointer plus two sheen streaks
+   that slide in opposite directions */
 .glare {
     background:
         radial-gradient(circle at var(--hx, 50%) var(--hy, 50%),
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(255, 255, 255, 0.3) 22%,
-            rgba(255, 255, 255, 0) 50%),
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.3) 20%,
+            rgba(255, 255, 255, 0) 48%),
         linear-gradient(105deg,
-            rgba(255, 255, 255, 0) 40%,
-            rgba(255, 255, 255, 0.55) 50%,
-            rgba(255, 255, 255, 0) 60%);
-    background-size: 100% 100%, 280% 100%;
-    background-position: 0 0, var(--hx, 50%) 0;
+            rgba(255, 255, 255, 0) 38%,
+            rgba(255, 255, 255, 0.7) 48%,
+            rgba(255, 255, 255, 0.15) 54%,
+            rgba(255, 255, 255, 0) 62%),
+        linear-gradient(75deg,
+            rgba(255, 255, 255, 0) 44%,
+            rgba(255, 255, 255, 0.45) 50%,
+            rgba(255, 255, 255, 0) 56%);
+    background-size: 100% 100%, 280% 100%, 320% 100%;
+    background-position: 0 0, var(--hx, 50%) 0, calc(100% - var(--hx, 50%)) 0;
     mix-blend-mode: overlay;
     opacity: var(--shine, 0.45);
 }
@@ -286,6 +321,44 @@
     object-fit: contain;
 
     filter: brightness(0) invert(1) brightness(0.95);
+}
+
+/* ================================
+   SCROLL CUE + PEEL HINT
+================================ */
+
+.cue,
+.hint {
+    position: absolute;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+
+    width: max-content;
+    margin-inline: auto;
+
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--color-muted);
+    text-align: center;
+    pointer-events: none;
+}
+
+.cueArrow {
+    display: inline-block;
+    margin-left: 4px;
+    animation: cueBob 1.6s ease-in-out infinite;
+}
+
+@keyframes cueBob {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(4px);
+    }
 }
 
 /* ================================
@@ -344,28 +417,13 @@
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .availability i {
-        animation: none;
-    }
-}
-
 /* ================================
    TABLET
 ================================ */
 
 @media (max-width: 900px) {
-    .heroContent {
-        grid-template-columns: 1.4fr 0.9fr;
-        gap: 1.5rem;
-    }
-
-    .wordmark {
-        font-size: clamp(3.5rem, 9vw, 7rem);
-    }
-
     .peel {
-        width: clamp(280px, 38vw, 400px);
+        width: clamp(280px, 46vw, 440px);
     }
 }
 
@@ -392,36 +450,35 @@
     }
 
     .heroContent {
-        position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        transform: none;
-
-        grid-template-columns: 1fr;
-        gap: 28px;
-        padding-block: 45px;
+        left: 6vw;
+        right: 6vw;
     }
 
     .wordmark {
-        font-size: clamp(3.2rem, 13vw, 5.5rem);
+        font-size: clamp(2.4rem, 13.5vw, 5.5rem);
     }
 
     .description {
-        max-width: 340px;
-        margin-top: 18px;
+        max-width: 300px;
+        margin-top: 20px;
         font-size: 0.8rem;
     }
 
     .peel {
-        width: clamp(220px, 75vw, 320px);
+        width: clamp(240px, 72vw, 340px);
+    }
+
+    .cue,
+    .hint {
+        bottom: 64px;
     }
 
     .footer {
-        position: relative;
-        bottom: auto;
-        left: auto;
-        right: auto;
+        left: 6vw;
+        right: 6vw;
+        bottom: 28px;
+        font-size: 0.6rem;
+        gap: 16px;
     }
 }
 
@@ -445,6 +502,7 @@
 
 /* ================================
    REDUCED MOTION
+   No pinning or scroll animation, so show everything in one static column.
 ================================ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -453,5 +511,35 @@
     .tilt,
     .flap {
         will-change: auto;
+    }
+
+    .availability i,
+    .cueArrow {
+        animation: none;
+    }
+
+    .hero {
+        padding-bottom: 80px;
+    }
+
+    .heroContent {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+        margin-block: auto;
+        padding-block: 40px 0;
+    }
+
+    .sticker {
+        position: relative;
+        inset: auto;
+        margin-bottom: 24px;
+    }
+
+    .cue,
+    .hint {
+        display: none;
     }
 }
